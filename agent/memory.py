@@ -5,6 +5,9 @@ Memory is explicit storage, not consciousness.
 It's data that persists across agent steps and can be queried.
 """
 
+import json
+from pathlib import Path
+
 
 class Memory:
     """
@@ -12,7 +15,9 @@ class Memory:
     
     This is intentionally basic and grows in lessons:
     - Lesson 07: Basic list-based memory
-    - Future: Add semantic search, persistence, etc.
+    - Persistence: save()/load() write the items to a JSON file,
+      so memory survives across restarts
+    - Future: Add semantic search, etc.
     """
     
     def __init__(self):
@@ -66,6 +71,50 @@ class Memory:
     def clear(self):
         """Clear all memory."""
         self.items = []
+    
+    def save(self, filepath: str):
+        """
+        Save memory items to a JSON file.
+        
+        The file is a plain JSON list of strings, so it can be
+        inspected or edited by hand.
+        
+        Args:
+            filepath: Path of the JSON file to write
+        """
+        Path(filepath).write_text(
+            json.dumps(self.items, indent=2), encoding="utf-8"
+        )
+    
+    def load(self, filepath: str) -> int:
+        """
+        Load memory items from a JSON file written by save().
+        
+        Loaded items replace the current items. If the file does
+        not exist, memory is left unchanged.
+        
+        Args:
+            filepath: Path of the JSON file to read
+            
+        Returns:
+            Number of items loaded (0 if the file does not exist)
+            
+        Raises:
+            ValueError: If the file does not contain a JSON list
+        """
+        path = Path(filepath)
+        if not path.exists():
+            return 0
+        
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, list):
+            raise ValueError("Memory file must contain a JSON list")
+        
+        self.items = []
+        for item in data:
+            if isinstance(item, str):
+                self.add(item)
+        return len(self.items)
     
     def __len__(self) -> int:
         """Return the number of items in memory."""
