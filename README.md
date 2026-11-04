@@ -169,3 +169,13 @@ This repository synthesizes best practices from modern agent development while d
 ---
 
 **If you find this useful, please star the repository and share it with others learning about AI agents.**
+
+## My Changes in This Fork
+
+Forked by Muhammad Ahmad Farooq from [pguso/agents-from-scratch](https://github.com/pguso/agents-from-scratch) (MIT). The original project — a 12-lesson build of an AI agent from first principles with a local LLM — is by Patric Gutersohn (pguso); all credit for it belongs to the original author.
+
+My change: the agent's memory now persists. `agent/memory.py` gained `save()` and `load()` methods that write the memory items to a JSON file and read them back, so the agent remembers across restarts. Previously memory was lost when the process ended, and the file itself listed persistence as a future step. Loading a missing file leaves memory unchanged, and the saved file is a plain JSON list you can inspect by hand. The existing `Memory` API is unchanged, so the agent needs no other changes.
+
+I added `tests/test_memory_persistence.py` with 6 tests covering the save/load round trip, the missing-file and bad-file cases, and the original memory behaviour — all 6 pass.
+
+What I learned: how agent memory is structured, why persistence turns short-term memory into long-term memory, and how to add a feature without changing an existing API.
